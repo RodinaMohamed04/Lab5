@@ -47,7 +47,7 @@ public abstract class DataBase {
     public void saveToFile() {
         try (java.io.FileWriter fileWriter = new java.io.FileWriter(fileName + ".txt")) {
             for (Records record : records) { //records is the arraylist
-                fileWriter.write(record.toString() + "\n");
+                fileWriter.write(record.Info()+ "\n");
             }
         } catch (java.io.IOException e) {
             e.printStackTrace();

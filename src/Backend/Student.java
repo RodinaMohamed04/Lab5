@@ -12,7 +12,7 @@ public class Student implements Records {
     private double gpa;
 
     // Constructor
-    public Student(int id, String fullName, int age, String gender, String department, double gpa) {
+    public Student(String fullName, int age, String gender, String department, double gpa) {
         this.id = nextID.getAndIncrement();
         this.fullName = fullName;
         this.age = age;
@@ -20,7 +20,15 @@ public class Student implements Records {
         this.department = department;
         setGpa(gpa);
 
-
+    }
+    // Overloaded Constructor with ID (for loading from file)
+    public Student(int id, String fullName, int age, String gender, String department, double gpa) {
+        this.id = id;
+        this.fullName = fullName;
+        this.age = age;
+        this.gender = gender;
+        this.department = department;
+        setGpa(gpa);
     }
 
     // Getters and Setters
@@ -74,7 +82,7 @@ public class Student implements Records {
         this.gpa = gpa;
     }
 
-    public String StudentInfo() {
+    public String Info() {
         return "Student ID: " + getId() + ", Name: " + getFullName() + ", Age: " + getAge() + ", Gender: " +
                 getGender() + ", Department: " + getDepartment() + ", GPA: " + getGpa();
     }

@@ -23,7 +23,7 @@ public  class StudentDataBase extends DataBase{
             String gender = parts[3].trim();
             String department = parts[4].trim();
             double gpa = Double.parseDouble(parts[5].trim());
-            return new Student(id, fullName, age, gender, department, gpa);
+            return new Student(id,fullName, age, gender, department, gpa);
         }
         catch (NumberFormatException e)
         {
