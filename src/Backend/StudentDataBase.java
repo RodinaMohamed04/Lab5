@@ -1,5 +1,7 @@
 package Backend;
-
+// StudentDataBase class that extends DataBase to handle student records
+// Responsible for creating Student records from file lines
+//Rest of the functionality is inherited from DataBase
 public  class StudentDataBase extends DataBase{
 
     public StudentDataBase(String filename) {
@@ -11,7 +13,7 @@ public  class StudentDataBase extends DataBase{
     public Records createRecord(String line){
         String [] parts = line.split(",");
         if(parts.length != 6) {
-            throw new IllegalArgumentException("Invalid record format");
+            new IllegalArgumentException("Invalid record format");
         }
         try
         {

@@ -18,7 +18,8 @@ public class Student implements Records {
         this.age = age;
         this.gender = gender;
         this.department = department;
-        this.gpa = gpa;
+        setGpa(gpa);
+
 
     }
 
