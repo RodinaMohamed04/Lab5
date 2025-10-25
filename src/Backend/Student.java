@@ -82,11 +82,13 @@ public class Student implements Records {
         this.gpa = gpa;
     }
 
-    public String Info() {
-        return "Student ID: " + getId() + ", Name: " + getFullName() + ", Age: " + getAge() + ", Gender: " +
-                getGender() + ", Department: " + getDepartment() + ", GPA: " + getGpa();
-    }
+    @Override
+public String Info() {
+    return id + "," + fullName + "," + age + "," + gender + "," + department + "," + gpa;
+}
 
+
+    @Override
     public String getSearchKey() {
         return String.valueOf(getId());
     }
