@@ -161,14 +161,12 @@ public class AddStudent extends javax.swing.JFrame {
     double gpa;
 
     try {
-        // تأكدي إن العمر رقم صحيح
         age = Integer.parseInt(ageText);
         if (age <= 0) {
             JOptionPane.showMessageDialog(this, "Age must be a positive number.", "Input Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // تأكدي إن الـGPA رقم عشري بين 0 و 4
         gpa = Double.parseDouble(gpaText);
         if (gpa < 0.0 || gpa > 4.0) {
             JOptionPane.showMessageDialog(this, "GPA must be between 0.0 and 4.0", "Input Error", JOptionPane.ERROR_MESSAGE);
