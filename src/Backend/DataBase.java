@@ -80,12 +80,27 @@ public abstract class DataBase {
     }
 
     //method to insert a new record and check for duplicates **//by calling contains method
+    //public void insertRecord(Records record) {
+        
+      //  if (!contains(record.getSearchKey())) {
+        //    records.add(record);
+          //  saveToFile();
+     //}
+   // } 
     public void insertRecord(Records record) {
-        if (!contains(record.getSearchKey())) {
-            records.add(record);
-            saveToFile();
-        }
+    try {
+        readFromFile(); 
+    } catch (Exception e){
     }
+    if (!contains(record.getSearchKey())) {
+        records.add(record);
+        saveToFile();
+    }
+}
+
+    
+
+    
 
     //method to delete a record by key
     public void deleteRecord(String key) {
