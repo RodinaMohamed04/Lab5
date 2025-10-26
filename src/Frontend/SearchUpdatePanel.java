@@ -8,49 +8,32 @@ import javax.swing.table.DefaultTableModel;
 
 public class SearchUpdatePanel extends javax.swing.JPanel {
 
-
     private StudentDataBase studentDB;
 
     public SearchUpdatePanel() {
         initComponents();
-
         studentDB = new StudentDataBase("Students");
         studentDB.readFromFile();
-
-        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTable1MouseClicked(evt);
-            }
-        });
-
-        jComboBox1.removeAllItems();
-        jComboBox1.addItem("Male");
-        jComboBox1.addItem("Female");
-        jComboBox1.addItem("Other");
-
         loadTableData();
     }
 
+   
     private void loadTableData() {
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        DefaultTableModel model = (DefaultTableModel) tableStudents.getModel();
         model.setRowCount(0);
-
         for (Records record : studentDB.returnAllrecords()) {
             Student s = (Student) record;
             model.addRow(new Object[]{
-                s.getId(),
-                s.getFullName(),
-                s.getAge(),
-                s.getGender(),
-                s.getDepartment(),
-                s.getGpa()
+                s.getId(), s.getFullName(), s.getAge(),
+                s.getGender(), s.getDepartment(), s.getGpa()
             });
         }
     }
 
-    private void searchAction() {
-        String key = jTextField1.getText().trim();
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+    // عند الضغط على زر البحث
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {
+        String key = tfSearch.getText().trim();
+        DefaultTableModel model = (DefaultTableModel) tableStudents.getModel();
         model.setRowCount(0);
 
         if (key.isEmpty()) {
@@ -61,8 +44,8 @@ public class SearchUpdatePanel extends javax.swing.JPanel {
         boolean found = false;
         for (Records record : studentDB.returnAllrecords()) {
             Student s = (Student) record;
-            if (String.valueOf(s.getId()).equalsIgnoreCase(key) ||
-                s.getFullName().toLowerCase().contains(key.toLowerCase())) {
+            if (String.valueOf(s.getId()).equalsIgnoreCase(key)
+                    || s.getFullName().equalsIgnoreCase(key)) {
                 model.addRow(new Object[]{
                     s.getId(), s.getFullName(), s.getAge(),
                     s.getGender(), s.getDepartment(), s.getGpa()
@@ -71,77 +54,70 @@ public class SearchUpdatePanel extends javax.swing.JPanel {
             }
         }
 
-        if (!found) {
+        if (!found)
             JOptionPane.showMessageDialog(this, "No student found with that ID or Name.");
+    }
+
+    
+    private void btnViewAllActionPerformed(java.awt.event.ActionEvent evt) {
+        studentDB.readFromFile();
+        loadTableData();
+    }
+
+    
+    private void tableStudentsMouseClicked(java.awt.event.MouseEvent evt) {
+        int row = tableStudents.getSelectedRow();
+        if (row >= 0) {
+            tfId.setText(tableStudents.getValueAt(row, 0).toString());
+            tfName.setText(tableStudents.getValueAt(row, 1).toString());
+            tfAge.setText(tableStudents.getValueAt(row, 2).toString());
+            cbGender.setSelectedItem(tableStudents.getValueAt(row, 3).toString());
+            tfDept.setText(tableStudents.getValueAt(row, 4).toString());
+            tfGpa.setText(tableStudents.getValueAt(row, 5).toString());
         }
     }
 
-    private void updateAction() {
-        String idText = jTextField2.getText().trim(); // tfId -> jTextField2 in your form
-        if (idText.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Enter Student ID to update.");
-            return;
-        }
-
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {
         try {
+            String idText = tfId.getText().trim();
+            if (idText.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please select a student first!");
+                return;
+            }
+
             int id = Integer.parseInt(idText);
-            String name = jTextField3.getText().trim(); // tfName
-            int age = Integer.parseInt(jTextField4.getText().trim()); // tfAge
-            String gender = jComboBox1.getSelectedItem().toString();
-            String dept = jTextField6.getText().trim(); // tfDept
-            double gpa = Double.parseDouble(jTextField5.getText().trim()); // tfGpa
+            Student updatedStudent = new Student(
+                    id,
+                    tfName.getText().trim(),
+                    Integer.parseInt(tfAge.getText().trim()),
+                    cbGender.getSelectedItem().toString(),
+                    tfDept.getText().trim(),
+                    Double.parseDouble(tfGpa.getText().trim())
+            );
 
-            // Validation
-            if (name.isEmpty() || dept.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Name and Department are required!");
-                return;
-            }
-            if (age < 15 || age > 100) {
-                JOptionPane.showMessageDialog(this, "Age must be between 15 and 100!");
-                return;
-            }
-            if (gpa < 0 || gpa > 4.0) {
-                JOptionPane.showMessageDialog(this, "GPA must be between 0.0 and 4.0!");
-                return;
-            }
-
-            // Student has constructor with id (int id,...)
-            Student updated = new Student(id, name, age, gender, dept, gpa);
-            studentDB.updateRecord(String.valueOf(id), updated);
+            studentDB.updateRecord(String.valueOf(id), updatedStudent);
             studentDB.saveToFile();
             loadTableData();
             JOptionPane.showMessageDialog(this, "Student updated successfully!");
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid number format in Age or GPA!");
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Invalid data format!");
         }
     }
 
-    private void deleteAction() {
-        String idText = jTextField2.getText().trim();
-        if (idText.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Select Student ID to delete.");
-            return;
-        }
-        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete?", "Confirm", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            studentDB.deleteRecord(idText);
-            studentDB.saveToFile();
-            loadTableData();
-            clearForm();
-            JOptionPane.showMessageDialog(this, "Student deleted successfully!");
-        }
+    
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {
+        tfId.setText("");
+        tfName.setText("");
+        tfAge.setText("");
+        tfDept.setText("");
+        tfGpa.setText("");
+        cbGender.setSelectedIndex(0);
     }
-
-    private void clearForm() {
-        jTextField2.setText(""); // id
-        jTextField3.setText(""); // name
-        jTextField4.setText(""); // age
-        jTextField5.setText(""); // gpa
-        jTextField6.setText(""); // dept
-        jComboBox1.setSelectedIndex(0);
-    }
+}
 
     // Generated code (do not remove) - but we will use the event handlers below
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
@@ -381,7 +357,7 @@ public class SearchUpdatePanel extends javax.swing.JPanel {
     private javax.swing.JTextField jTextField5; // gpa
     private javax.swing.JTextField jTextField6; // dept
     // End of variables declaration                   
-}
+/*
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -413,11 +389,15 @@ public class SearchUpdatePanel extends javax.swing.JPanel {
 
         jTextField1.setName("tfSearch"); // NOI18N
 
+        jButton1.setBackground(new java.awt.Color(0, 204, 255));
         jButton1.setText("Search");
+        jButton1.setBorder(new javax.swing.border.MatteBorder(null));
         jButton1.setName("btnSearch"); // NOI18N
 
+        jButton2.setBackground(new java.awt.Color(0, 204, 255));
         jButton2.setText("ViewAll");
-        jButton2.setName("btnRefresh"); // NOI18N
+        jButton2.setBorder(new javax.swing.border.MatteBorder(null));
+        jButton2.setName("btnViewAll"); // NOI18N
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -461,7 +441,9 @@ public class SearchUpdatePanel extends javax.swing.JPanel {
 
         jTextField6.setName("tfDept"); // NOI18N
 
+        jButton3.setBackground(new java.awt.Color(0, 204, 255));
         jButton3.setText("Update");
+        jButton3.setBorder(new javax.swing.border.MatteBorder(null));
         jButton3.setName("btnUpdate"); // NOI18N
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -469,8 +451,10 @@ public class SearchUpdatePanel extends javax.swing.JPanel {
             }
         });
 
-        jButton4.setText("Delete");
-        jButton4.setName("btnDelete"); // NOI18N
+        jButton4.setBackground(new java.awt.Color(0, 204, 255));
+        jButton4.setText("Clear");
+        jButton4.setBorder(new javax.swing.border.MatteBorder(null));
+        jButton4.setName("btnClear"); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -556,7 +540,7 @@ public class SearchUpdatePanel extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 471, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -573,10 +557,9 @@ public class SearchUpdatePanel extends javax.swing.JPanel {
                     .addComponent(jButton1)
                     .addComponent(jButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -609,3 +592,4 @@ public class SearchUpdatePanel extends javax.swing.JPanel {
     private javax.swing.JTextField jTextField6;
     // End of variables declaration//GEN-END:variables
 
+*
