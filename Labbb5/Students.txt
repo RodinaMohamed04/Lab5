@@ -1,0 +1,5 @@
+1002,Sara Mohamed,19,Female,Communications Engineering,3.6
+1003,Khaled Hassan,21,Male,Electrical Engineering,3.9
+1004,Laila Saeed,20,Female,Computer Engineering,3.7
+1005,Omar Fathy,22,Male,Mechanical Engineering,3.5
+1006,Noha Adel,19,Female,Civil Engineering,3.4
